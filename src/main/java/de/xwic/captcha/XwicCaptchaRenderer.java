@@ -43,8 +43,10 @@ public final class XwicCaptchaRenderer {
 	 * @param len
 	 * @return
 	 */
-	public BufferedImage createCaptchaImage(final int len) {
-		BufferedImage bi = renderWord(len);
+	public XwicCaptcha createCaptchaImage(final int len) {
+		final char[] randomCharacters = config.getTextGenerator().randomCharacters(len);
+
+		BufferedImage bi = renderWord(randomCharacters);
 		bi = distort(bi);
 		bi = addBackground(bi);
 		final Graphics2D graphics = bi.createGraphics();
@@ -53,7 +55,7 @@ public final class XwicCaptchaRenderer {
 			drawBorder(graphics);
 		}
 
-		return bi;
+		return new XwicCaptcha(new String(randomCharacters), bi);
 	}
 
 	/**
@@ -180,10 +182,10 @@ public final class XwicCaptchaRenderer {
 	}
 
 	/**
-	 * @param len
+	 * @param wordChars
 	 * @return
 	 */
-	private BufferedImage renderWord(final int len) {
+	private BufferedImage renderWord(final char[] wordChars) {
 		final int width = config.getWidth();
 		final int height = config.getHeight();
 
@@ -201,7 +203,6 @@ public final class XwicCaptchaRenderer {
 		final int fontSize = config.getFontSize();
 		final int startPosY = (height - fontSize) / 5 + fontSize;
 
-		final char[] wordChars = config.getTextGenerator().randomCharacters(len);
 		final Font[] chosenFonts = new Font[wordChars.length];
 		final int[] charWidths = new int[wordChars.length];
 		int widthNeeded = 0;
@@ -232,4 +233,5 @@ public final class XwicCaptchaRenderer {
 
 		return image;
 	}
+
 }
